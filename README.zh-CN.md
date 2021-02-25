@@ -3,8 +3,8 @@
 ## 目录
 
 1. [介绍](#介绍)
-2. [Variables](#variables)
-3. [Functions](#functions)
+2. [变量](#变量)
+3. [函数](#函数)
 4. [Objects and Data Structures](#objects-and-data-structures)
 5. [Classes](#classes)
 6. [SOLID](#solid)
@@ -22,7 +22,7 @@ you shout when reading code](https://www.osnews.com/images/comics/wtfm.jpg)
 
 Software engineering principles, from Robert C. Martin's book [_Clean Code_](https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882), adapted for JavaScript. This is not a style guide. It's a guide to producing [readable, reusable, and refactorable](https://github.com/ryanmcdermott/3rs-of-software-architecture) software in JavaScript.
 
-罗伯特·C·马丁的书《Clean Code》中的软件工程原理，适用于 JavaScript。这不是样式指南，而是一份产出可读性、可复用性和可重构性的 JavaScritp 软件的指南。
+罗伯特·C·马丁的书《Clean Code》中的软件工程原则，适用于 JavaScript。这不是样式指南，而是一份产出可读性、可复用性和可重构性的 JavaScritp 软件的指南。
 
 
 
@@ -142,7 +142,7 @@ saveCityZipCode(city, zipCode);
 
 ### Avoid Mental Mapping
 
-### 避免与心理映射
+### 避免恍惚的映射名称
 
 Explicit is better than implicit.
 
@@ -221,12 +221,18 @@ function paintCar(car) {
 
 ### Use default arguments instead of short circuiting or conditionals
 
+### 使用默认参数代替短路逻辑或条件表达式
+
 Default arguments are often cleaner than short circuiting. Be aware that if you
 use them, your function will only provide default values for `undefined`
 arguments. Other "falsy" values such as `''`, `""`, `false`, `null`, `0`, and
 `NaN`, will not be replaced by a default value.
 
-**Bad:**
+默认参数通常比短路逻辑更加简洁。如果你这样使用了，你会意识到你的函数只会给 `undefined` 这样的参数提供默认值。其它无效的值如 `''`, `""`, `false`, `null`, `0` 和 `NaN`，都不会替换掉默认值。
+
+
+
+**差:**
 
 ```javascript
 function createMicrobrewery(name) {
@@ -235,7 +241,7 @@ function createMicrobrewery(name) {
 }
 ```
 
-**Good:**
+**好:**
 
 ```javascript
 function createMicrobrewery(name = "Hipster Brew Co.") {
@@ -247,12 +253,20 @@ function createMicrobrewery(name = "Hipster Brew Co.") {
 
 ## **Functions**
 
+## 函数
+
 ### Function arguments (2 or fewer ideally)
+
+### 函数参数（理想个数两个或两个以下）
 
 Limiting the amount of function parameters is incredibly important because it
 makes testing your function easier. Having more than three leads to a
 combinatorial explosion where you have to test tons of different cases with
 each separate argument.
+
+限制函数参数非常重要，因为这样测试你的函数会更加容易。超过3个参数会导致组合紊乱，你必须使用每个单独的参数来测试大量不同的案例。
+
+
 
 One or two arguments is the ideal case, and three should be avoided if possible.
 Anything more than that should be consolidated. Usually, if you have
@@ -260,24 +274,42 @@ more than two arguments then your function is trying to do too much. In cases
 where it's not, most of the time a higher-level object will suffice as an
 argument.
 
+一或两个参数是理想情况，并且如果可以的话，应该避免定义2个以上的参数。除此以外的任何情况都应该合并参数。如果你有两个以上的参数，你的函数会做更多的事情。除此之外的大多情况下，使用高阶对象作为参数就足够了。
+
+
+
 Since JavaScript allows you to make objects on the fly, without a lot of class
 boilerplate, you can use an object if you are finding yourself needing a
 lot of arguments.
 
+从 JavaScipt 允许你创建动态对象以后，除了大量的类引用，如果你发现自己需要很多参数，你可以使用一个对象来代替。
+
 To make it obvious what properties the function expects, you can use the ES2015/ES6
 destructuring syntax. This has a few advantages:
 
+为了定义函数所期望的属性，你可以使用 ES2015（别名：ES6）的解构语法。这个语法有以下几个特点：
+
+
+
 1. When someone looks at the function signature, it's immediately clear what
    properties are being used.
-2. It can be used to simulate named parameters.
-3. Destructuring also clones the specified primitive values of the argument
+2. 当有人看到函数签名时，就能立即明白是什么在调用属性。
+3. It can be used to simulate named parameters.
+4. 可以模仿参数名称来使用
+5. Destructuring also clones the specified primitive values of the argument
    object passed into the function. This can help prevent side effects. Note:
    objects and arrays that are destructured from the argument object are NOT
    cloned.
-4. Linters can warn you about unused properties, which would be impossible
+6. 解构也可以通过函数里的 `arguments` 对象，拷贝指定的原始值。这可以帮助我们阻止副作用。注意：从 `arguments` 对象里解构出来的对象和数组，不能拷贝。
+7. Linters can warn you about unused properties, which would be impossible
    without destructuring.
+8. 语法检测工具可以提醒我们没有使用的属性，以及哪个属性可能没有做解构
 
-**Bad:**
+
+
+
+
+**差:**
 
 ```javascript
 function createMenu(title, body, buttonText, cancellable) {
@@ -287,7 +319,7 @@ function createMenu(title, body, buttonText, cancellable) {
 createMenu("Foo", "Bar", "Baz", true);
 ```
 
-**Good:**
+**好:**
 
 ```javascript
 function createMenu({ title, body, buttonText, cancellable }) {
@@ -306,13 +338,17 @@ createMenu({
 
 ### Functions should do one thing
 
+### 一个函数应该只做一件事
+
 This is by far the most important rule in software engineering. When functions
 do more than one thing, they are harder to compose, test, and reason about.
 When you can isolate a function to just one action, it can be refactored
 easily and your code will read much cleaner. If you take nothing else away from
 this guide other than this, you'll be ahead of many developers.
 
-**Bad:**
+这是到目前为止，在软件工程中最重要的规则。当一个函数做了不止一件事的时候，它们就更难组织代码、测试和排查原因。当你可以将一个函数独立为只有一个动作时，这个函数会更加便于重构，并且你的代码读起来也会清晰很多。如果你从这个指南中只学了这一点，那么你将会领先于许多开发者。
+
+**差:**
 
 ```javascript
 function emailClients(clients) {
@@ -325,7 +361,7 @@ function emailClients(clients) {
 }
 ```
 
-**Good:**
+**好:**
 
 ```javascript
 function emailActiveClients(clients) {
@@ -342,7 +378,9 @@ function isActiveClient(client) {
 
 ### Function names should say what they do
 
-**Bad:**
+### 函数名称应该就能说明这个函数做了什么
+
+**差:**
 
 ```javascript
 function addToDate(date, month) {
@@ -352,10 +390,11 @@ function addToDate(date, month) {
 const date = new Date();
 
 // It's hard to tell from the function name what is added
+// 这个函数名称很难说明到底添加了什么
 addToDate(date, 1);
 ```
 
-**Good:**
+**好:**
 
 ```javascript
 function addMonthToDate(month, date) {
@@ -370,11 +409,17 @@ addMonthToDate(1, date);
 
 ### Functions should only be one level of abstraction
 
+### 函数应该只有一层抽象逻辑
+
 When you have more than one level of abstraction your function is usually
 doing too much. Splitting up functions leads to reusability and easier
 testing.
 
-**Bad:**
+当你的函数抽象逻辑不止一层的时候，你的函数做的事情就太多了。分解函数可以实现可复用性，也更便于测试。
+
+> 最后一句翻译的不满意
+
+**差:**
 
 ```javascript
 function parseBetterJSAlternative(code) {
@@ -401,7 +446,7 @@ function parseBetterJSAlternative(code) {
 }
 ```
 
-**Good:**
+**好:**
 
 ```javascript
 function parseBetterJSAlternative(code) {
@@ -442,16 +487,20 @@ function parse(tokens) {
 
 ### Remove duplicate code
 
-### 移除声明过的代码
+### 移除用过的代码
 
 Do your absolute best to avoid duplicate code. Duplicate code is bad because it
 means that there's more than one place to alter something if you need to change
 some logic.
 
+你最好避免使用重复的代码。重复的代码不好是因为，如果你需要修改一些逻辑，这意味着你要修改多个位置的代码。
+
 Imagine if you run a restaurant and you keep track of your inventory: all your
 tomatoes, onions, garlic, spices, etc. If you have multiple lists that
 you keep this on, then all have to be updated when you serve a dish with
 tomatoes in them. If you only have one list, there's only one place to update!
+
+想象一下，如果你经营着一个餐厅
 
 Oftentimes you have duplicate code because you have two or more slightly
 different things, that share a lot in common, but their differences force you
@@ -529,6 +578,8 @@ function showEmployeeList(employees) {
 **[⬆ 返回顶部](#目录)**
 
 ### Set default objects with Object.assign
+
+
 
 **Bad:**
 
@@ -613,6 +664,8 @@ function createTempFile(name) {
 
 ### Avoid Side Effects (part 1)
 
+### 规避副作用（第一部分）
+
 A function produces a side effect if it does anything other than take a value in
 and return another value or values. A side effect could be writing to a file,
 modifying some global variable, or accidentally wiring all your money to a
@@ -661,6 +714,8 @@ console.log(newName); // ['Ryan', 'McDermott'];
 **[⬆ 返回顶部](#目录)**
 
 ### Avoid Side Effects (part 2)
+
+### 规避副作用（第二部分）
 
 In JavaScript, some values are unchangeable (immutable) and some are changeable
 (mutable). Objects and arrays are two kinds of mutable values so it's important
@@ -717,6 +772,8 @@ const addItemToCart = (cart, item) => {
 **[⬆ 返回顶部](#目录)**
 
 ### Don't write to global functions
+
+### 不要定义全局函数
 
 Polluting globals is a bad practice in JavaScript because you could clash with another
 library and the user of your API would be none-the-wiser until they get an
@@ -1023,6 +1080,8 @@ for (let i = 0; i < list.length; i++) {
 
 ### Remove dead code
 
+### 删掉废弃代码
+
 Dead code is just as bad as duplicate code. There's no reason to keep it in
 your codebase. If it's not being called, get rid of it! It will still be safe
 in your version history if you still need it.
@@ -1057,7 +1116,11 @@ inventoryTracker("apples", req, "www.inventory-awesome.io");
 
 ## **Objects and Data Structures**
 
+## 对象和数据结构
+
 ### Use getters and setters
+
+### 使用 getters 和 setters
 
 Using getters and setters to access data on objects could be better than simply
 looking for a property on an object. "Why?" you might ask. Well, here's an
